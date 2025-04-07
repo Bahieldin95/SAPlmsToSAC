@@ -1,0 +1,6 @@
+@SAP_LMS_to_SAC_HostAddress = http://localhost:5077
+
+GET {{SAP_LMS_to_SAC_HostAddress}}/Students/
+Accept: application/json
+
+###
