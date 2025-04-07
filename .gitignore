@@ -1,0 +1,13 @@
+﻿# Ignore build directories and files
+bin
+obj
+
+# Ignore Visual Studio specific files
+.vs
+.user
+.suo
+.userosscache
+.sln.docstates
+
+# Ignore configuration files (optional)
+appsettings.Development.json
