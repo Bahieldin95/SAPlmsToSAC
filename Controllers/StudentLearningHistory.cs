@@ -112,4 +112,47 @@ public class StudentsController : ControllerBase
 
 
 
+    [HttpPost("DeleteStudents")]
+    public async Task<IActionResult> DeleteStudents([FromBody] List<string> primkeys)
+    {
+        try
+        {
+            if (primkeys == null || !primkeys.Any())
+            {
+                return BadRequest("No PRIMKEYs provided for deletion.");
+            }
+
+            // Step 1: Fetch students to delete
+            var studentsToDelete = await _context.Students
+                .Where(s => primkeys.Contains(s.PRIMKEY))
+                .ToListAsync();
+
+            if (!studentsToDelete.Any())
+            {
+                return NotFound("No matching students found to delete.");
+            }
+
+            // Step 2: Remove the students
+            _context.Students.RemoveRange(studentsToDelete);
+
+            // Step 3: Save changes
+            await _context.SaveChangesAsync();
+
+            return Ok($"{studentsToDelete.Count} student(s) deleted successfully.");
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = $"Error deleting students: {ex.Message}";
+            if (ex.InnerException != null)
+            {
+                errorMessage += $" Inner Exception: {ex.InnerException.Message}";
+            }
+            Console.WriteLine(errorMessage);
+            return BadRequest(errorMessage);
+        }
+    }
+
+
+
+
 }
