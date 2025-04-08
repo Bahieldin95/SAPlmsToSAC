@@ -111,18 +111,28 @@ public class StudentsController : ControllerBase
     }
 
 
-
     [HttpPost("DeleteStudents")]
-    public async Task<IActionResult> DeleteStudents([FromBody] List<string> primkeys)
+    public async Task<IActionResult> DeleteStudents([FromBody] List<Student> students)
     {
         try
         {
-            if (primkeys == null || !primkeys.Any())
+            if (students == null || !students.Any())
             {
-                return BadRequest("No PRIMKEYs provided for deletion.");
+                return BadRequest("No student records provided for deletion.");
             }
 
-            // Step 1: Fetch students to delete
+            // Extract PRIMKEYs from received students
+            var primkeys = students
+                .Where(s => !string.IsNullOrWhiteSpace(s.PRIMKEY))
+                .Select(s => s.PRIMKEY)
+                .ToList();
+
+            if (!primkeys.Any())
+            {
+                return BadRequest("No valid PRIMKEYs found in the provided student records.");
+            }
+
+            // Step 1: Fetch matching students from DB
             var studentsToDelete = await _context.Students
                 .Where(s => primkeys.Contains(s.PRIMKEY))
                 .ToListAsync();
@@ -147,6 +157,7 @@ public class StudentsController : ControllerBase
             {
                 errorMessage += $" Inner Exception: {ex.InnerException.Message}";
             }
+
             Console.WriteLine(errorMessage);
             return BadRequest(errorMessage);
         }
