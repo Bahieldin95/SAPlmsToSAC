@@ -118,7 +118,7 @@ public class StudentsController : ControllerBase
         {
             if (students == null || !students.Any())
             {
-                return BadRequest("No student records provided for deletion.");
+                return Ok("No student records provided for deletion.");
             }
 
             // Extract PRIMKEYs from received students
